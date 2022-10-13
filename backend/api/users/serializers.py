@@ -20,5 +20,5 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {"password": {'write_only': True}}
 
-    def get_is_subscribed(self):
+    def get_is_subscribed(self, obj):
         return False
