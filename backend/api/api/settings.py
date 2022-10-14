@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'colorfield',
     # My_project_apps
     'users.apps.UsersConfig',
-    'tags.apps.TagsConfig'
+    'tags.apps.TagsConfig',
+    'recipes.apps.RecipesConfig'
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
