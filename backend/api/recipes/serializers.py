@@ -8,6 +8,6 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'unit'
+            'measurement_unit'
         )
         lookup_field = 'id'

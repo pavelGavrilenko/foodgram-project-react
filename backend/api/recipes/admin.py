@@ -5,7 +5,7 @@ from .models import Ingredient
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'name',
-        'unit'
+        'measurement_unit'
     )
     search_fields = ('name',)
 
