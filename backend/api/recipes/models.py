@@ -48,22 +48,41 @@ class IngredientAmount(models.Model):
 
 
 class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               verbose_name='Автор рецепта',
-                               related_name='recipes')
-    ingredients = models.ManyToManyField(Ingredient,
-                                         related_name='ingredients',
-                                         through='IngredientAmount',
-                                         verbose_name='Ингредиенты')
-    tags = models.ManyToManyField(Tag, related_name='tags',
-                                  verbose_name='Тэг')
-    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True,
-                                    db_index=True)
-    text = models.TextField(verbose_name='Описание',
-                            max_length=3000)
-    name = models.CharField(max_length=100, verbose_name='Название рецепта',
-                            null=False)
-    image = models.ImageField(upload_to='media/', verbose_name='Изображение')
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор рецепта',
+        related_name='recipes'
+    )
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        related_name='ingredients',
+        through='IngredientAmount',
+        verbose_name='Ингредиенты'
+    )
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='tags',
+        verbose_name='Тэг'
+    )
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True,
+        db_index=True
+    )
+    text = models.TextField(
+        verbose_name='Описание',
+        max_length=3000
+    )
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Название рецепта',
+        null=False
+    )
+    image = models.ImageField(
+        upload_to='media/',
+        verbose_name='Изображение'
+    )
     cooking_time = models.PositiveSmallIntegerField(
         default=1,
         validators=[MinValueValidator(1, 'Значение не может быть меньше 1')],
@@ -79,16 +98,18 @@ class Recipe(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User,
-                             related_name='favorites',
-                             on_delete=models.CASCADE,
-                             verbose_name='Пользоавтель избранного'
-                             )
-    recipe = models.ForeignKey(Recipe,
-                               related_name='favorites',
-                               on_delete=models.CASCADE,
-                               verbose_name='Рецепт в избранном'
-                               )
+    user = models.ForeignKey(
+        User,
+        related_name='favorites',
+        on_delete=models.CASCADE,
+        verbose_name='Пользоавтель избранного'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='favorites',
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт в избранном'
+    )
 
     class Meta:
         verbose_name = 'Избранные рецепты'
@@ -99,15 +120,18 @@ class Favorite(models.Model):
 
 
 class ShoppingList(models.Model):
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name='user_shopping_list',
-                             verbose_name='Пользоавтель листа покупок'
-                             )
-    recipe = models.ForeignKey(Recipe,
-                               on_delete=models.CASCADE,
-                               related_name='purchases',
-                               verbose_name='Рецепт в покупках')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='user_shopping_list',
+        verbose_name='Пользоавтель листа покупок'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='purchases',
+        verbose_name='Рецепт в покупках'
+    )
 
     class Meta:
         verbose_name = 'Лист покупок'

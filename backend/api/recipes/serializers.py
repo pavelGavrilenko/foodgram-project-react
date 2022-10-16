@@ -69,10 +69,18 @@ class RecipeSerializer(serializers.ModelSerializer):
         return IngredientAmountSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
-        return True
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
+            return False
+        user = request.user
+        return Favorite.objects.filter(recipe=obj, user=user).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        return True
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
+            return False
+        user = request.user
+        return ShoppingList.objects.filter(recipe=obj, user=user).exists()
 
 
 class RecipeFullSerializer(serializers.ModelSerializer):

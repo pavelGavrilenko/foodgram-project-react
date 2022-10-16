@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-# Create your models here.
+from django.contrib.auth import get_user_model
+from django.db.models import UniqueConstraint
+
 
 
 class CustomUser(AbstractUser):
@@ -34,3 +36,31 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f'Юзер {self.username}'
+
+
+User = get_user_model()
+
+
+class Follow(models.Model):
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Подписка',
+        related_name='following'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Подписчик',
+        related_name='follower'
+    )
+
+    class Meta:
+        verbose_name = 'Подписки'
+        UniqueConstraint(
+            fields=['following', 'user'],
+            name='follow_unique'
+        )
+
+    def __str__(self):
+        return f"Пользователь {self.user} подписан на {self.following}"
