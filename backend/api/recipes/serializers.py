@@ -5,7 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from drf_extra_fields.fields import Base64ImageField
 
-from .models import Ingredient, IngredientAmount, Recipe, Favorite
+from .models import Ingredient, IngredientAmount, Recipe, Favorite, ShoppingList
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.serializers import CurrentUserSerializer
@@ -73,19 +73,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_in_shopping_cart(self, obj):
         return True
-
-
-class RecipeImageSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
-
-    def get_image(self, obj):
-        request = self.context.get('request')
-        image_url = obj.image.url
-        return request.build_absolute_uri(image_url)
 
 
 class RecipeFullSerializer(serializers.ModelSerializer):
@@ -164,7 +151,7 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         return data
 
 
-class RecipeToFollowSerializer(serializers.ModelSerializer):
+class RecipeToFollowOrByeListSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
     class Meta:
@@ -192,9 +179,29 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         request = self.context.get('request')
-        return RecipeToFollowSerializer(
+        return RecipeToFollowOrByeListSerializer(
             instance.recipe,
             context={'request': request}
         ).data
+
+
+class ShoppingListSerializer(FavoriteSerializer):
+    class Meta:
+        model = ShoppingList
+        fields = ('user', 'recipe')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=ShoppingList.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже добавлен в лист покупок'
+            )
+        ]
+
+        def to_representation(self, instance):
+            requset = self.context.get('request')
+            return RecipeToFollowOrByeListSerializer(
+                instance.recipe,
+                context={'request': requset}
+            ).data
 
 

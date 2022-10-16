@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from django.shortcuts import HttpResponse, get_object_or_404
 
 
-from .models import Ingredient, Recipe, Favorite
+from .models import Ingredient, Recipe, Favorite, ShoppingList
 from .serializers import IngredientSerializer, RecipeSerializer, RecipeFullSerializer
-from .serializers import FavoriteSerializer
+from .serializers import FavoriteSerializer, ShoppingListSerializer
 from .filters import RecipeFilter, IngredientFilter
 from .permissions import IsAuthorOrReadOnly
 
@@ -65,4 +65,31 @@ class FavoriteApiView(APIView):
         user = request.user
         recipe = get_object_or_404(Recipe, id=favorite_id)
         Favorite.objects.filter(user=user, recipe=recipe).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShoppingListView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, recipe_id):
+        user = request.user
+        data = {
+            'recipe': recipe_id,
+            'user': user.id
+        }
+        context = {'request': request}
+        serializer = ShoppingListSerializer(data=data,
+                                            context=context)
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, recipe_id):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        ShoppingList.objects.filter(user=user, recipe=recipe).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

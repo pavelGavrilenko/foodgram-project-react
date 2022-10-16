@@ -79,10 +79,16 @@ class Recipe(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User, related_name='favorites',
-                             on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, related_name='favorites',
-                               on_delete=models.CASCADE)
+    user = models.ForeignKey(User,
+                             related_name='favorites',
+                             on_delete=models.CASCADE,
+                             verbose_name='Пользоавтель избранного'
+                             )
+    recipe = models.ForeignKey(Recipe,
+                               related_name='favorites',
+                               on_delete=models.CASCADE,
+                               verbose_name='Рецепт в избранном'
+                               )
 
     class Meta:
         verbose_name = 'Избранные рецепты'
@@ -90,5 +96,23 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user} добавил в избранное {self.recipe}"
+
+
+class ShoppingList(models.Model):
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='user_shopping_list',
+                             verbose_name='Пользоавтель листа покупок'
+                             )
+    recipe = models.ForeignKey(Recipe,
+                               on_delete=models.CASCADE,
+                               related_name='purchases',
+                               verbose_name='Рецепт в покупках')
+
+    class Meta:
+        verbose_name = 'Лист покупок'
+
+    def __str__(self):
+        return f'Пользователь {self.user} добавил в покупки {self.recipe}'
 
 
