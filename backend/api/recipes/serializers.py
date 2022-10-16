@@ -1,9 +1,11 @@
 from rest_framework import serializers
 from django.db import transaction
+from rest_framework.views import APIView
+from rest_framework.validators import UniqueTogetherValidator
 
 from drf_extra_fields.fields import Base64ImageField
 
-from .models import Ingredient, IngredientAmount, Recipe
+from .models import Ingredient, IngredientAmount, Recipe, Favorite
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.serializers import CurrentUserSerializer
@@ -160,3 +162,39 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             }
         ).data
         return data
+
+
+class RecipeToFollowSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        image_url = obj.image.url
+        return request.build_absolute_uri(image_url)
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('user', 'recipe')
+        model = Favorite
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Favorite.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже добавлен в избранное'
+            )
+        ]
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        return RecipeToFollowSerializer(
+            instance.recipe,
+            context={'request': request}
+        ).data
+
+

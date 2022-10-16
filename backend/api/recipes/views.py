@@ -1,9 +1,13 @@
-from rest_framework.permissions import AllowAny
-from rest_framework import generics, viewsets
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import generics, viewsets, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.shortcuts import HttpResponse, get_object_or_404
 
 
-from .models import Ingredient, Recipe
+from .models import Ingredient, Recipe, Favorite
 from .serializers import IngredientSerializer, RecipeSerializer, RecipeFullSerializer
+from .serializers import FavoriteSerializer
 from .filters import RecipeFilter, IngredientFilter
 from .permissions import IsAuthorOrReadOnly
 
@@ -36,3 +40,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context.update({'request': self.request})
         return context
+
+
+class FavoriteApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, favorite_id):
+        user = request.user
+        data = {
+            'recipe': favorite_id,
+            'user': user.id
+        }
+        serializer = FavoriteSerializer(data=data,
+                                        context={'request': request})
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, favorite_id):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=favorite_id)
+        Favorite.objects.filter(user=user, recipe=recipe).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
