@@ -125,10 +125,12 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATIC_URL = '/project_static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'project_static')
 
-STATIC_URL = '/static/'
+
+MEDIA_URL = '/project_media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'project_media')
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
