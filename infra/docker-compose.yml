@@ -8,7 +8,9 @@ services:
       - ./.env
 
   backend:
-    image: ../backend
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
     restart: always
     volumes:
       - static_value:/app/project_static/
