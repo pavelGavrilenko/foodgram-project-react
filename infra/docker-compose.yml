@@ -7,7 +7,7 @@ services:
     env_file:
       - ./.env
 
-  web:
+  backend:
     image: ../backend
     restart: always
     volumes:
@@ -40,6 +40,6 @@ services:
       - backend
       - frontend
 volumes:
-    postgres_data:
+    db_value:
     static_value:
     media_value:
