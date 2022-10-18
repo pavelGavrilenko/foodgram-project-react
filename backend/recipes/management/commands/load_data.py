@@ -3,7 +3,8 @@ import csv
 from django.core.management import BaseCommand
 
 from api import settings
-from recipes.models import Ingredient, Tag
+from recipes.models import Ingredient
+from tags.models import Tag
 
 MODELS_FILES = {
     Ingredient: 'ingredients.csv',
