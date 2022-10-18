@@ -8,7 +8,7 @@ from tags.models import Tag
 
 MODELS_FILES = {
     Ingredient: 'ingredients.csv',
-    # Tag: 'tags.csv',
+    Tag: 'tags.csv',
 }
 
 
