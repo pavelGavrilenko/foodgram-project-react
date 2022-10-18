@@ -9,7 +9,7 @@ class Tag(models.Model):
         unique=True,
         verbose_name='Имя тега'
     )
-    color = ColorField(
+    color = models.CharField(
         default='#FF0000',
         unique=True,
     )

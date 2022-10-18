@@ -12,3 +12,4 @@ class TagSerializer(serializers.ModelSerializer):
             'slug'
         )
         lookup_field = 'id'
+        extra_kwargs = {'url': {'lookup_field': 'id'}}
