@@ -10,6 +10,7 @@ class Tag(models.Model):
         verbose_name='Имя тега'
     )
     color = models.CharField(
+        max_length=16,
         default='#FF0000',
         unique=True,
     )
