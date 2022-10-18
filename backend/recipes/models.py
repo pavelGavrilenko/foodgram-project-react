@@ -11,7 +11,7 @@ User = get_user_model()
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=50,
+        max_length=100,
         null=False,
         verbose_name='Название продукта'
     )
