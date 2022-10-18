@@ -14,6 +14,7 @@ class Tag(models.Model):
         unique=True,
     )
     slug = models.SlugField(
+        max_length=255,
         unique=True,
         verbose_name='Слаг тэга'
     )
