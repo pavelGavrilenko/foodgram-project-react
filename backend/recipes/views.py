@@ -13,21 +13,12 @@ from .filters import RecipeFilter, IngredientFilter
 from .permissions import IsAuthorOrReadOnly
 
 
-class IngredientList(generics.ListAPIView):
-    serializer_class = IngredientSerializer
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
-    permission_classes = [AllowAny, ]
-    filter_backends = [DjangoFilterBackend, ]
-    filter_class = IngredientFilter
-    pagination_class = None
-
-
-class IngredientRetrieve(generics.RetrieveAPIView):
     serializer_class = IngredientSerializer
-    queryset = Ingredient.objects.all()
-    permission_classes = [AllowAny, ]
-    filter_backends = [DjangoFilterBackend, ]
-    filter_class = IngredientFilter
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
+    permission_classes = (AllowAny,)
     pagination_class = None
 
 
