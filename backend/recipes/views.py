@@ -2,6 +2,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics, viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import HttpResponse, get_object_or_404
 
 
@@ -16,6 +17,7 @@ class IngredientList(generics.ListAPIView):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
     permission_classes = [AllowAny, ]
+    filter_backends = [DjangoFilterBackend, ]
     filter_class = IngredientFilter
     pagination_class = None
 
@@ -24,6 +26,7 @@ class IngredientRetrieve(generics.RetrieveAPIView):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
     permission_classes = [AllowAny, ]
+    filter_backends = [DjangoFilterBackend, ]
     filter_class = IngredientFilter
     pagination_class = None
 
@@ -31,7 +34,8 @@ class IngredientRetrieve(generics.RetrieveAPIView):
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthorOrReadOnly, ]
     queryset = Recipe.objects.all()
-    filterset_class = RecipeFilter
+    filter_backends = [DjangoFilterBackend, ]
+    filter_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PUT', 'PATCH'):
