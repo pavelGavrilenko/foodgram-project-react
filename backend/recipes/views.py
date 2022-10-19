@@ -24,6 +24,8 @@ class IngredientRetrieve(generics.RetrieveAPIView):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
     permission_classes = [AllowAny, ]
+    filter_class = IngredientFilter
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
