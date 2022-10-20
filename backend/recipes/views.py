@@ -1,13 +1,17 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import generics, viewsets, status
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import HttpResponse, get_object_or_404
 
 
-from .models import Ingredient, Recipe, Favorite, ShoppingList, IngredientAmount
-from .serializers import IngredientSerializer, RecipeSerializer, RecipeFullSerializer
+from .models import (Ingredient, Recipe,
+                     Favorite, ShoppingList,
+                     IngredientAmount)
+from .serializers import (IngredientSerializer,
+                          RecipeSerializer,
+                          RecipeFullSerializer)
 from .serializers import FavoriteSerializer, ShoppingListSerializer
 from .filters import RecipeFilter, IngredientFilter
 from .permissions import IsAuthorOrReadOnly
@@ -91,7 +95,11 @@ class DownloadListIngredients(APIView):
         shopping_cart = {}
         ingredients = IngredientAmount.objects.filter(
             recipe__purchases__user=request.user
-        ).values_list('ingredient__name', 'amount', 'ingredient__measurement_unit')
+        ).values_list(
+            'ingredient__name',
+            'amount',
+            'ingredient__measurement_unit'
+        )
         print(ingredients)
         for name, amount, measurement_unit in ingredients:
             if name not in shopping_cart:
@@ -105,5 +113,7 @@ class DownloadListIngredients(APIView):
                       f"{value['measurement_unit']}\n"
                       for item, value in shopping_cart.items()])
         response = HttpResponse(file_text, 'Content-Type: text/plain')
-        response['Content-Disposition'] = 'attachment; filename="ShopIngredientsList.txt"'
+        response[
+            'Content-Disposition'
+        ] = 'attachment; filename="ShopIngredientsList.txt"'
         return response

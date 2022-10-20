@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import UniqueConstraint
 
 
-
 class CustomUser(AbstractUser):
     username = models.CharField(
         max_length=150,

@@ -43,7 +43,9 @@ class IngredientAmount(models.Model):
     class Meta:
         verbose_name = 'Количество'
         constraints = [
-            UniqueConstraint(fields=['recipe', 'ingredient'], name='ingredient_recipe')
+            UniqueConstraint(
+                fields=['recipe', 'ingredient'], name='ingredient_recipe'
+            )
         ]
 
     def __str__(self):
@@ -120,7 +122,6 @@ class Favorite(models.Model):
             UniqueConstraint(fields=['recipe', 'user'], name='favorite_unique')
         ]
 
-
     def __str__(self):
         return f"{self.user} добавил в избранное {self.recipe}"
 
@@ -147,5 +148,3 @@ class ShoppingList(models.Model):
 
     def __str__(self):
         return f'Пользователь {self.user} добавил в покупки {self.recipe}'
-
-
