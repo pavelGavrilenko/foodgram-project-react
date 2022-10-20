@@ -59,7 +59,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api.wsgi.application'
 
 
-# Код для поднятия базы при локальных тестах.
+# Код для поднятия базы при локальных тестах апи.
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
