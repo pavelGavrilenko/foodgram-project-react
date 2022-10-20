@@ -153,13 +153,12 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        data = RecipeSerializer(
+        return RecipeSerializer(
             instance,
             context={
                 'request': self.context.get('request')
             }
         ).data
-        return data
 
 
 class RecipeToFollowOrByeListSerializer(serializers.ModelSerializer):
