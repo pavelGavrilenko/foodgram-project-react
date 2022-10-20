@@ -42,6 +42,9 @@ class IngredientAmount(models.Model):
 
     class Meta:
         verbose_name = 'Количество'
+        constraints = [
+            UniqueConstraint(fields=['recipe', 'ingredient'], name='ingredient_recipe')
+        ]
 
     def __str__(self):
         return f'Количество {self.ingredient} в {self.recipe}'
@@ -56,13 +59,13 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        related_name='ingredients',
+        related_name='recipes',
         through='IngredientAmount',
         verbose_name='Ингредиенты'
     )
     tags = models.ManyToManyField(
         Tag,
-        related_name='tags',
+        related_name='recipes',
         verbose_name='Тэг'
     )
     pub_date = models.DateTimeField(
@@ -113,7 +116,10 @@ class Favorite(models.Model):
 
     class Meta:
         verbose_name = 'Избранные рецепты'
-        UniqueConstraint(fields=['recipe', 'user'], name='favorite_unique')
+        constraints = [
+            UniqueConstraint(fields=['recipe', 'user'], name='favorite_unique')
+        ]
+
 
     def __str__(self):
         return f"{self.user} добавил в избранное {self.recipe}"
@@ -135,6 +141,9 @@ class ShoppingList(models.Model):
 
     class Meta:
         verbose_name = 'Лист покупок'
+        constraints = [
+            UniqueConstraint(fields=['recipe', 'user'], name='list_unique')
+        ]
 
     def __str__(self):
         return f'Пользователь {self.user} добавил в покупки {self.recipe}'

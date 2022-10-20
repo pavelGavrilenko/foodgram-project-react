@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from django.db import transaction
-from rest_framework.views import APIView
 from rest_framework.validators import UniqueTogetherValidator
 
 from drf_extra_fields.fields import Base64ImageField
 
-from .models import Ingredient, IngredientAmount, Recipe, Favorite, ShoppingList
+from .models import (Ingredient, IngredientAmount,
+                     Recipe, Favorite, ShoppingList)
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.serializers import CurrentUserSerializer
@@ -51,7 +51,11 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
-    ingredients = serializers.SerializerMethodField()
+    ingredients = IngredientAmountSerializer(
+        read_only=True,
+        many=True,
+        source='recipes_ingredients_list'
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -62,11 +66,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_favorited', 'is_in_shopping_cart',
             'name', 'image', 'text', 'cooking_time'
         )
-
-    def get_ingredients(self, obj):
-        recipe = obj
-        queryset = recipe.recipes_ingredients_list.all()
-        return IngredientAmountSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
@@ -123,22 +122,26 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         IngredientAmount.objects.filter(recipe=instance).delete()
         self.create_bulk(instance, ingredients_data)
-        instance.name = validated_data.pop('name')
-        instance.text = validated_data.pop('text')
-        instance.cooking_time = validated_data.pop('cooking_time')
         if validated_data.get('image') is not None:
             instance.image = validated_data.pop('image')
         instance.save()
         instance.tags.set(tags_data)
-        return instance
+        return super().update(instance, validated_data)
 
     def validate(self, data):
-        ingredients = self.initial_data.get('ingredients')
+        ingredients = data.get('ingredients')
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError({
                     'ingredients': ('Число игредиентов должно быть больше 0')
                 })
+        list_ingr = [item['ingredient'] for item in data['ingredients']]
+        all_ingredients, distinct_ingredients = (
+            len(list_ingr), len(set(list_ingr)))
+        if all_ingredients != distinct_ingredients:
+            raise serializers.ValidationError(
+                {'error': 'Ингредиенты должны быть уникальными'}
+            )
         return data
 
     def validate_cooking_time(self, data):
@@ -211,5 +214,3 @@ class ShoppingListSerializer(FavoriteSerializer):
                 instance.recipe,
                 context={'request': requset}
             ).data
-
-

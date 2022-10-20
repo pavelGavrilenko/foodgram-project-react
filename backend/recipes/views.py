@@ -50,11 +50,7 @@ class FavoriteApiView(APIView):
         }
         serializer = FavoriteSerializer(data=data,
                                         context={'request': request})
-        if not serializer.is_valid():
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -77,11 +73,7 @@ class ShoppingListView(APIView):
         context = {'request': request}
         serializer = ShoppingListSerializer(data=data,
                                             context=context)
-        if not serializer.is_valid():
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -96,24 +88,22 @@ class DownloadListIngredients(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
-        shopping_list = {}
+        shopping_cart = {}
         ingredients = IngredientAmount.objects.filter(
             recipe__purchases__user=request.user
-        )
-        for ingredient in ingredients:
-            amount = ingredient.amount
-            name = ingredient.ingredient.name
-            measurement_unit = ingredient.ingredient.measurement_unit
-            if name not in shopping_list:
-                shopping_list[name] = {
+        ).values_list('ingredient__name', 'amount', 'ingredient__measurement_unit')
+        print(ingredients)
+        for name, amount, measurement_unit in ingredients:
+            if name not in shopping_cart:
+                shopping_cart[name] = {
                     'measurement_unit': measurement_unit,
                     'amount': amount
                 }
             else:
-                shopping_list[name]['amount'] += amount
+                shopping_cart[name]['amount'] += amount
         file_text = ([f"* {item}:{value['amount']}"
                       f"{value['measurement_unit']}\n"
-                      for item, value in shopping_list.items()])
+                      for item, value in shopping_cart.items()])
         response = HttpResponse(file_text, 'Content-Type: text/plain')
         response['Content-Disposition'] = 'attachment; filename="ShopIngredientsList.txt"'
         return response

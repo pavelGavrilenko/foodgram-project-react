@@ -89,9 +89,7 @@ class FollowListSerializer(serializers.ModelSerializer):
             return False
         if other_user.count() == 0:
             return False
-        if Follow.objects.filter(user=user, following=current_user).exists():
-            return True
-        return False
+        return Follow.objects.filter(user=user, following=current_user).exists()
 
     def get_recipes(self, obj):
         from recipes.serializers import RecipeToFollowOrByeListSerializer
