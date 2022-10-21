@@ -58,3 +58,7 @@ docker-compose exec backend python manage.py createsuperuser
 ```bash
 docker-compose exec backend python manage.py load_data
 ```
+
+
+Адресс боевого http://51.250.68.201/
+Креды админки mail: admin@admin.admin  pass: admin
