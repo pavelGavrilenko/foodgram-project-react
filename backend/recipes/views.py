@@ -2,6 +2,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import HttpResponse, get_object_or_404
 
@@ -97,18 +98,14 @@ class DownloadListIngredients(APIView):
             recipe__purchases__user=request.user
         ).values_list(
             'ingredient__name',
-            'amount',
             'ingredient__measurement_unit'
-        )
-        print(ingredients)
-        for name, amount, measurement_unit in ingredients:
+        ).annotate(amount=Sum('amount'))
+        for name, measurement_unit, amount in ingredients:
             if name not in shopping_cart:
                 shopping_cart[name] = {
                     'measurement_unit': measurement_unit,
                     'amount': amount
                 }
-            else:
-                shopping_cart[name]['amount'] += amount
         file_text = ([f"* {item}:{value['amount']}"
                       f"{value['measurement_unit']}\n"
                       for item, value in shopping_cart.items()])

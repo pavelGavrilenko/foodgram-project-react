@@ -124,7 +124,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         self.create_bulk(instance, ingredients_data)
         if validated_data.get('image') is not None:
             instance.image = validated_data.pop('image')
-        instance.save()
         instance.tags.set(tags_data)
         return super().update(instance, validated_data)
 
