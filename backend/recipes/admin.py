@@ -29,7 +29,7 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.favorites.count()
 
     def ingredients(self, obj):
-        return list(obj.ingredients.all())
+        return obj.ingredients.all()
 
 
 admin.site.register(Ingredient, IngredientAdmin)
