@@ -99,7 +99,7 @@ class DownloadListIngredients(APIView):
         ).values_list(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
+        ).annotate(ingridients_counts=Sum('amount'))
         for name, measurement_unit, amount in ingredients:
             if name not in shopping_cart:
                 shopping_cart[name] = {

@@ -3,7 +3,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='x54+z_#$nrk3)+!^xw*oh9$gn*6909k2gz(mtp17q^nr%jtyk#')
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
